@@ -91,7 +91,3 @@ def supprimer_historique():
     conn.commit()
     conn.close()
     return redirect('/')
-
-if __name__ == '__main__':
-    init_db()
-    app.run(debug=True)
