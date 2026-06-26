@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Boutique Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+    <h2>🛍️ Gestion de Boutique</h2>
+    <div class="card p-3 mb-4 bg-light">
+        <h5>➕ Ajouter un article</h5>
+        <form action="/ajouter" method="POST" class="row g-3">
+            <div class="col"><input type="text" name="nom" class="form-control" placeholder="Nom" required></div>
+            <div class="col"><input type="number" name="prix" class="form-control" placeholder="Prix" required></div>
+            <div class="col"><button class="btn btn-success">Ajouter</button></div>
+        </form>
+    </div>
+
+    <h4>💰 Chiffre d'affaires : {{ ca_total }} FCFA</h4>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr><th>Nom</th><th>Prix</th><th>Stock</th><th>Panier</th><th>Action</th><th>Supprimer</th></tr>
+        </thead>
+        <tbody>
+            {% for a in articles %}
+            <tr>
+                <td>{{ a['nom'] }}</td><td>{{ a['prix'] }}</td>
+                <td><span class="badge bg-info">{{ a['stock'] }}</span></td>
+                <td>
+                    <form action="/vendre" method="POST" class="d-flex">
+                        <input type="hidden" name="id" value="{{ a['id'] }}"><input type="hidden" name="nom" value="{{ a['nom'] }}"><input type="hidden" name="prix" value="{{ a['prix'] }}">
+                        <input type="number" name="qte" value="1" min="1" max="{{ a['stock'] }}" class="form-control form-control-sm" style="width: 60px">
+                        <button class="btn btn-sm btn-primary ms-1">Vendre</button>
+                    </form>
+                </td>
+                <td>
+                    <form action="/ajouter_stock" method="POST" class="d-flex">
+                        <input type="hidden" name="id" value="{{ a['id'] }}">
+                        <input type="number" name="qte" value="1" class="form-control form-control-sm" style="width: 60px">
+                        <button class="btn btn-sm btn-secondary ms-1">+</button>
+                    </form>
+                </td>
+                <td><form action="/supprimer_article" method="POST"><input type="hidden" name="id" value="{{ a['id'] }}"><button class="btn btn-sm btn-danger">Suppr</button></form></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between mt-5"><h4>📜 Historique</h4><form action="/supprimer_historique" method="POST"><button class="btn btn-outline-danger btn-sm">Effacer tout</button></form></div>
+    <table class="table table-sm">
+        <thead><tr><th>Article</th><th>Qté</th><th>Total</th><th>Date</th><th>Reçu</th></tr></thead>
+        <tbody>
+            {% for v in ventes %}
+            <tr>
+                <td>{{ v['article'] }}</td><td>{{ v['qte'] }}</td><td>{{ v['total'] }} FCFA</td><td>{{ v['date'] }}</td>
+                <td>
+                    <form action="/generer_recu" method="POST">
+                        <input type="hidden" name="nom" value="{{ v['article'] }}"><input type="hidden" name="qte" value="{{ v['qte'] }}"><input type="hidden" name="total" value="{{ v['total'] }}">
+                        <button class="btn btn-sm btn-warning">PDF</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
